@@ -28,17 +28,23 @@ SCAN_TIMES      LONG      = Array[40, 2, 22]           (seconds from midnight)
 WV              FLOAT     = Array[12500]               (cm-1)
 
 """
+# Andoya file
+# sav_fname = "/disk1/Andoya/jon/calibrated_radiances/20230308/20230308_0723_to_0901_calibrated_radiancesv1_1.sav"
 
-sav_fname = "/disk1/Andoya/jon/calibrated_radiances/20230308/20230308_0723_to_0901_calibrated_radiancesv1_1.sav"
+# File from Jon's publication
+sav_fname = "/users/jon/data_sets_for_pub_20220323.sav"
+
 data_sav = readsav(sav_fname, verbose=True)
 
-times = (data_sav['scan_times'])
+# times = (data_sav['scan_times'])
 # seconds from midnightL 8am = 8 * 60 * 60
 
-lucas_type = np.unravel_index((np.abs(times-3600*8)).argmax(), times.shape)
+# lucas_type = np.unravel_index((np.abs(times-3600*8)).argmax(), times.shape)
 
 wv = (data_sav['wv'])
-rad = (data_sav['radiance'])
+rad = (data_sav['zen'])
+# rad = (data_sav['radiance'])
+
 # wv_important = print(len((wv.flatten())))
 # print(len(wv))
 
@@ -57,8 +63,11 @@ rad = (data_sav['radiance'])
 path = "/disk1/sm4219/LBLRTM_FOR_SOPHIE/LBLRTM_SIMGA_BOUNDS_40/"
 path2 = "/disk1/sm4219/LBLRTM_FOR_SOPHIE/LBLRTM_SIMGA_BOUNDS_40/"
 
-wn,spectrum = np.loadtxt(path+"example_spectrum_126.txt", unpack = True, dtype=np.float64) #137
-wn2,spectrum2 = np.loadtxt(path2+"example_spectrum_23.txt", unpack = True , dtype=np.float64) #40
+wn,spectrum = np.loadtxt(path+"apodised_spectra_126_22.txt", unpack = True, dtype=np.float64) #137
+wn2,spectrum2 = np.loadtxt(path2+"apodised_spectra_36_01_12.txt", unpack = True , dtype=np.float64) #40
+
+path3 = "/disk1/sm4219/LBLRTM_FOR_SOPHIE/LBLRTM_SIMGA_BOUNDS_40/"
+wn3,spectrum3 = np.loadtxt(path2+"example_spectrum_joncopy.txt", unpack = True , dtype=np.float64) #jons file
 
 # wn,spectrum = np.loadtxt(path+'apodised_spectra_126_22.txt', unpack = True, dtype=np.float64)
 # wn2,spectrum2 = np.loadtxt(path2+'apodised_spectra_36_og.txt', unpack = True , dtype=np.float64) #37 LAUYERS
@@ -66,16 +75,18 @@ wn2,spectrum2 = np.loadtxt(path2+"example_spectrum_23.txt", unpack = True , dtyp
 # Scale spectra
 spectrum_new = spectrum * 10000
 spectrum_new2 = spectrum2 * 10000
+spectrum_new3 = spectrum3 * 10000
 
 # spec = spectrum_new[np.logical_not(np.isnan(spectrum_new))]
 # fig, (ax1, ax2) = plt.subplots(1, 2, layout='constrained')
 # print(len(wn)) 
 
+"""
 da = xr.DataArray(
     data=spectrum_new,
     dims=["wn"],
     coords=dict(
-        wn = np.linspace(300,1600,5201871),
+        wn = np.linspace(300,1600,5201870),
         # chanigng wavenumber ot be more accurate
     ),)
 
@@ -83,20 +94,20 @@ da2 = xr.DataArray(
     data=spectrum_new2,
     dims=["wn_2"],
     coords=dict(
-        wn_2 = np.linspace(300,1600,5103797),
+        wn_2 = np.linspace(300,1600,5103796),
     ),)
 
+"""
+
 # interpolating so that wavenumber scales match up
-# da_new = da.interpolate_na(dim="wn", method="linear", fill_value="extrapolate")
-da_new = (da.interp(wn=wv, method="linear", kwargs={"fill_value": "extrapolate"}))
-da_new2 = (da2.interp(wn_2=wv, method="linear", kwargs={"fill_value": "extrapolate"}))
+# da_new = (da.interp(wn=wv, method="linear", kwargs={"fill_value": "extrapolate"}))
+# da_new2 = (da2.interp(wn_2=wv, method="linear", kwargs={"fill_value": "extrapolate"}))
 
-spec = da_new.data
-spec2 = da_new2.data
-print(len(spec2), da_new2)
+# spec = da_new.data
+# spec2 = da_new2.data
+# print(len(spec2), da_new2)
 
-
-"""subtraction"""
+"""subtraction
 sub = []
 for i in range(0,12500):
     diff = rad[i:i+1,21, 1, 39] - spec[i]
@@ -106,20 +117,27 @@ sub2 = []
 for j in range(0,12500):
     diff2 = rad[j:j+1,21, 1, 39] - spec2[j]
     sub2.append(diff2)
+"""
 
-# sub_dub = []
-# for kl in range(0,12400):
-#     diff3 = sub2[kl] - sub[kl]
-#     sub_dub.append(diff3)
-
+# subtraction plots
 # plt.plot(wv, sub,label ='andoya-36layers', lw=0.5, color='red')
-plt.plot(wv, sub2,label ='andoya-126layers', lw=0.5, color='green', alpha=0.8)
-# plt.plot(wn2, spectrum_new2, label='36 layers', alpha=0.6, lw=0.7)
-# plt.plot(wv[0:12400], (sub_dub),label ='(andoya-126layers) - (andoya-36layers)', lw=0.7, color='darkblue')
+# plt.plot(wv, sub2,label ='andoya-126layers', lw=0.5, color='green', alpha=0.8)
+# plt.axhline(y=0, linestyle='--', color='black')
 
-plt.xlim(400,1500)
-plt.ylim(-0.05,0.05)
-plt.axhline(y=0, linestyle='--', color='black')
+# 72
+# for i in range(300,700):
+#     print(wv[i])
+
+# usual plots
+# plt.plot(wn2, spectrum_new2, label='36 layers', alpha=0.6, lw=0.7, color='darkblue' )
+# plt.plot(wn, spectrum_new, label='126 layers', alpha=0.6, lw=0.7, color='darkgreen')
+# plt.plot(wv,rad[0:12500,21, 1, 39], label='data pub', alpha=0.6, lw=0.7, color='red')
+
+plt.plot(wv[::174,0], rad[31, 0:12500], label='data pub', alpha=0.6, lw=0.7, color='red')
+# plt.plot(wn3, spectrum_new3, label='Jons layers', alpha=0.6, lw=0.7, color='darkgreen')
+
+plt.xlim(100,1600)
+plt.ylim(0,0.2)
 
 # ax1.plot(wv, rad[0:12500,0,0,0])
 # ax1.set_xlim(400,1500)
@@ -135,7 +153,7 @@ plt.legend()
 # plt.savefig('wv_rad_andoyda_0803')
 plt.xlabel('Wavenumber / cm-1')
 plt.ylabel('Radiance / [W m-2 sr-1 / cm-1]')
-plt.savefig(path+'andoya_vs_lblrtm_new.png')
+plt.savefig(path+'andoya_vs_lblrtm_APODISED.png')
 plt.show()
 print('all is dandy')
 
