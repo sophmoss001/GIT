@@ -7,6 +7,7 @@ import pandas as pd
 import matplotlib.dates as mdates
 from netCDF4 import Dataset
 from matplotlib.dates import DateFormatter
+import matplotlib as mpl
 
 # importing data set
 ds_all = xarray.load_dataset('download.nc', engine="netcdf4")
@@ -59,13 +60,12 @@ years = []
 for j in range(len(timew2)):
     years.append(int(np.datetime_as_string(timew2[j], unit='Y').split('-')[0]))
 
-fig4, ax4 = plt.subplots(figsize=(12, 8))
+# fig4, ax4 = plt.subplots(figsize=(12, 8))
 
 ax4.set_title('2012 to 2012')
 ax4.set_ylabel('cloud cover')
 ax4.set_xlabel('tcwv')
-# hist = ax4.hist2d(mean_wv, mean_cloud)
-# fig4.colorbar(hist[3], ax=ax4)
+
 # plt.scatter(total_column_w, total_clouds, c=months, cmap='viridis')
 
 
@@ -73,7 +73,7 @@ ax4.set_xlabel('tcwv')
 ds = xarray.Dataset({
     'total_column_w': ('time', total_column_w),
     'high_cloud': ('time', high_clouds),
-    # 'total_clouds': ('time', total_clouds),
+    'total_clouds': ('time', total_clouds),
     'years': ('time', years),
     'months': ('time', months)
 }, coords={'time': timew2})
@@ -94,22 +94,29 @@ ds['year_month'] = ds['years'] * 100 + ds['months']
 grouped_data2 = ds2.groupby('year_month').mean(dim='time')
 grouped_data = ds.groupby('year_month').mean(dim='time')
 
+cmap = plt.get_cmap('Paired', 12)
+cmap.set_under('gray')
+
+# create a second axes for the colorbar
 # Create a scatter plot with color based on months
-plt.scatter(grouped_data['total_column_w'], grouped_data['high_cloud'], c=grouped_data['months'], 
-            cmap='spring',
-            alpha=0.7,
-            s = 150)
-plt.colorbar(label='Month')
+# plt.scatter(grouped_data['total_column_w'], grouped_data['high_cloud'], c=grouped_data['months'], 
+#             cmap='spring',
+#             alpha=0.7,
+#             s = 150)
+# plt.colorbar(label='Month')
 
-plt.scatter(grouped_data2['total_column_w'], grouped_data2['low_cloud'], c=grouped_data2['months'], 
-            cmap='winter',
-            alpha=0.7,
-            s = 150)
+# plt.scatter(grouped_data['total_column_w'], grouped_data['total_clouds'], c=grouped_data['months'], 
+#             alpha=0.7,
+#             s = 300,
+#             cmap=cmap)
 
+# hist = ax4.hist2d(mean_wv, mean_cloud)
+# fig4.colorbar(hist[3], ax=ax4)
 # print(len(grouped_data['total_column_w']))
-plt.colorbar(label='Month')
+# plt.colorbar(label='Month')
+# # plt.grid()
 # plt.ylim(0.35,0.6)
-plt.xlim(9.0,15.5)
+# plt.xlim(9.0,16.0)
 
 # ax4.bar(new_time, mean_low,color='teal', label='low cloud cover', width=1.0)
 # ax4.bar(new_time, mean_high, color='salmon', label='high cloud cover', width=1.0 
@@ -120,8 +127,6 @@ plt.xlim(9.0,15.5)
 # ax4.xaxis.set_major_formatter(date_form)
 # ax4.xaxis.set_major_locator(mdates.WeekdayLocator(interval=50))
 # plt.xlabel('Day-Month-Year')
-
-
 
 plt.savefig('high_clouds_allyears.png')
 
