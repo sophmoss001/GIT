@@ -9,7 +9,7 @@ from netCDF4 import Dataset
 from matplotlib.dates import DateFormatter
 
 # importing data set
-ds_all = xarray.load_dataset('download.nc', engine="netcdf4")
+ds_all = xarray.load_dataset('download_chilbolt.nc', engine="netcdf4")
 
 updated_ds = ds_all.sel(latitude = 51.145 , longitude = -1.44, method = 'nearest')
 total_clouds = (updated_ds.variables['tcc'])
@@ -42,7 +42,7 @@ high_clouds2 = np.array(high_clouds)
 
 # mean
 
-n_a = 12
+n_a = 5
 
 mean_cloud = np.mean(total_clouds2.reshape(-1,n_a), axis =1)
 mean_wv = np.mean(total_column_w2.reshape(-1,n_a), axis =1)
@@ -53,7 +53,7 @@ mean_high = np.mean(high_clouds2.reshape(-1,n_a), axis =1)
 
 fig4, ax4 = plt.subplots(figsize=(12, 8))
 
-ax4.set_title('2012-2022')
+ax4.set_title('Rain 2022')
 ax4.set_ylabel('cloud cover')
 
 print(len(timew)/n_a)
@@ -64,11 +64,10 @@ ax4.bar(new_time, mean_high, color='salmon', label='high cloud cover', width=1.0
 
 plt.legend()
 ax4.legend(loc='upper left')
-date_form = DateFormatter("%d-%m-%y")
+date_form = DateFormatter("%m-%d")
 ax4.xaxis.set_major_formatter(date_form)
-ax4.xaxis.set_major_locator(mdates.WeekdayLocator(interval=50))
-plt.xlabel('Day-Month-Year')
-plt.savefig('high_clouds_allyears.png')
+ax4.xaxis.set_major_locator(mdates.WeekdayLocator(interval=4))
+plt.savefig('high_low_chil_clouds_NEW.png')
 
 print('booya')
 # hea

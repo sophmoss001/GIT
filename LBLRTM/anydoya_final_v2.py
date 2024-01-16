@@ -37,22 +37,15 @@ sav_fname = "/users/jon/data_sets_for_pub_20220323.sav"
 data_sav = readsav(sav_fname, verbose=True)
 
 # times = (data_sav['scan_times'])
-# seconds from midnightL 8am = 8 * 60 * 60
-
 # lucas_type = np.unravel_index((np.abs(times-3600*8)).argmax(), times.shape)
 
 wv = (data_sav['wv'])
 rad = (data_sav['zen'])
 # rad = (data_sav['radiance'])
 
-# wv_important = print(len((wv.flatten())))
-# print(len(wv))
-
 # REMOVES ZEROS FROM WV
 # wv_new = wv[wv != 0]
 # print('wavenumbers here', wv_new)
-
-# plt.figure()
 # plt.title('Difference plot 20230308_8am_radiance')
 # # plt.plot(wv, rad[0:12500,21, 1, 39], color='red')
 # plt.xlabel('Wavenumber(nm)')
@@ -66,8 +59,6 @@ path2 = "/disk1/sm4219/LBLRTM_FOR_SOPHIE/LBLRTM_SIMGA_BOUNDS_40/"
 wn,spectrum = np.loadtxt(path+"apodised_spectra_126_22.txt", unpack = True, dtype=np.float64) #137
 wn2,spectrum2 = np.loadtxt(path2+"apodised_spectra_36_01_12.txt", unpack = True , dtype=np.float64) #40
 
-path3 = "/disk1/sm4219/LBLRTM_FOR_SOPHIE/LBLRTM_SIMGA_BOUNDS_40/"
-wn3,spectrum3 = np.loadtxt(path2+"example_spectrum_joncopy.txt", unpack = True , dtype=np.float64) #jons file
 
 # wn,spectrum = np.loadtxt(path+'apodised_spectra_126_22.txt', unpack = True, dtype=np.float64)
 # wn2,spectrum2 = np.loadtxt(path2+'apodised_spectra_36_og.txt', unpack = True , dtype=np.float64) #37 LAUYERS
@@ -75,12 +66,6 @@ wn3,spectrum3 = np.loadtxt(path2+"example_spectrum_joncopy.txt", unpack = True ,
 # Scale spectra
 spectrum_new = spectrum * 10000
 spectrum_new2 = spectrum2 * 10000
-spectrum_new3 = spectrum3 * 10000
-
-# spec = spectrum_new[np.logical_not(np.isnan(spectrum_new))]
-# fig, (ax1, ax2) = plt.subplots(1, 2, layout='constrained')
-# print(len(wn)) 
-
 """
 da = xr.DataArray(
     data=spectrum_new,
@@ -124,20 +109,44 @@ for j in range(0,12500):
 # plt.plot(wv, sub2,label ='andoya-126layers', lw=0.5, color='green', alpha=0.8)
 # plt.axhline(y=0, linestyle='--', color='black')
 
-# 72
-# for i in range(300,700):
-#     print(wv[i])
-
 # usual plots
 # plt.plot(wn2, spectrum_new2, label='36 layers', alpha=0.6, lw=0.7, color='darkblue' )
 # plt.plot(wn, spectrum_new, label='126 layers', alpha=0.6, lw=0.7, color='darkgreen')
 # plt.plot(wv,rad[0:12500,21, 1, 39], label='data pub', alpha=0.6, lw=0.7, color='red')
 
-plt.plot(wv[::174,0], rad[31, 0:12500], label='data pub', alpha=0.6, lw=0.7, color='red')
-# plt.plot(wn3, spectrum_new3, label='Jons layers', alpha=0.6, lw=0.7, color='darkgreen')
+# Download Jons data 
+path3 = "/disk1/sm4219/LBLRTM_FOR_SOPHIE/LBLRTM_SIMGA_BOUNDS_40/"
+wn3,spectrum3 = np.loadtxt(path2+"apodised_spectra_jon.txt", unpack = True , dtype=np.float64) #jons file
+spectrum_new3 = spectrum3 * 10000
 
-plt.xlim(100,1600)
-plt.ylim(0,0.2)
+# Plot jons data ;12500
+plt.plot(wv[0:12500,0], rad[0:12500,31], label='data pub', alpha=0.6, lw=0.7, color='red')
+plt.plot(wn3, spectrum_new3, label='Jons layers', alpha=0.6, lw=0.7, color='darkgreen')
+
+# Plot differeence
+da3 = xr.DataArray(
+    data=spectrum_new3,
+    dims=["wn3"],
+    coords=dict(
+        wn3 = np.linspace(300,2000,5574947),
+        # chanigng wavenumber ot be more accurate
+    ),)
+
+da_new3 = (da3.interp(wn3=wv[0:12500,0], method="linear", kwargs={"fill_value": "extrapolate"}))
+spec3 = da_new3.data
+
+sub3 = []
+for k in range(0,12500):
+    diff3 = rad[k:k+1,31] - spec3[k:k+1]
+    sub3.append(diff3)
+
+plt.xlim(400,2000)
+plt.ylim(-0.03,0.15)
+
+plt.plot(wv, sub3, label='Difference pub - jons layers', alpha=0.6, lw=0.7, color='teal')
+
+# The variable zen is a floating point array fltarr(72,12500) 
+# index 31 (of the index ranging from 0-71) is the 11:00 1 minute average for 11:00
 
 # ax1.plot(wv, rad[0:12500,0,0,0])
 # ax1.set_xlim(400,1500)
