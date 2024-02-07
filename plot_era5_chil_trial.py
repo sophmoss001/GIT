@@ -16,7 +16,6 @@ from matplotlib.colors import ListedColormap
 
 # importing data set
 ds_1part = xarray.load_dataset('/home/sm4219/download_new_23_lateryears.nc', engine="netcdf4")
-
 ds_2part = xarray.load_dataset('/home/sm4219/download_new_23.nc', engine="netcdf4")
 
 updated_ds_1 = ds_1part.sel(latitude = 51.145 , longitude = -1.44, method = 'nearest')
@@ -189,6 +188,7 @@ cbar = fig.colorbar(axs[0].scatter([], [], c=[], cmap=color_map2, vmin=1, vmax=1
 cbar.set_ticks(months_range)
 cbar.set_ticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
 plt.savefig('/home/sm4219/twelveplots_newjan.png')
+plt.show()
 
 # Adjust layout
 # plt.tight_layout(rect=[0, 0.03, 1, 0.95])
