@@ -104,8 +104,13 @@ for j in range(0,12500):
 
 # Download Jons data SIMULATION HIS TAPE 5 MY APODISATION
 path3 = "/disk1/sm4219/LBLRTM_FOR_SOPHIE/LBLRTM_SIMGA_BOUNDS_40/"
-wn3,spectrum3 = np.loadtxt(path2+"apodised_spectra_NEW_SOPH.txt", unpack = True , dtype=np.float64) #jons file
+
+"here is APOSIDED FUNCTION STUFF BEING LOADEDDDDD"
+
+wn3,spectrum3 = np.loadtxt(path2+"apodised_spectra_TOPHAT_FIRST.txt", unpack = True , dtype=np.float64) #jons file
 spectrum_new3 = spectrum3 * 10000
+
+
 
 # wn3,spectrum3 = np.loadtxt(path2+"apodised_spectra_NEW_old.txt.txt", unpack = True , dtype=np.float64) #jons file
 # np.savetxt(path+'/apodised_spectra_NEW_NEW.txt',np.vstack([apodised_wn, apodised_spectrum]).T)
@@ -185,11 +190,12 @@ print(len(spec4))
 
 # plt.plot(wv_jon, (rad_jon)*10000, label='Jons layers 11', alpha=0.6, lw=0.7, color='blue')
 # plt.plot(wv[0:12500,0], rad[0:12500,31], label='rad from datasetforpub', alpha=0.6, lw=0.7, color='red')
+
 # plt.plot(wn3, spectrum_new3, label='raw sophiejon', alpha=0.6, lw=0.7, color='green')
 # plt.plot(wv_jon, spe_jon*10000, color='red', lw=0.5, alpha=0.6)
 
 plt.xlim(400,1600)
-plt.ylim(-8,8)
+# plt.ylim(-8,8)
 
 
 stretch_new = stretched_obvs[2000:10500]
@@ -200,6 +206,8 @@ print(wn_stretch[2000:])
 # DIFFERENCE CALCULATIONS AND PLOTS
 sub3 = ((stretch_new*10000)/10) - (spec4/10)[2000:10500]
 plt.plot(wn_stretch[2000:10500],sub3, label='Difference pub - jons layers', alpha=0.8, lw=0.4, color='pink',)
+
+"THESES ARE THE REAL DEAL ONES"
 
 # plt.plot(wn_stretch[2000:10500],(stretch_new*10000)/10, label='stretchnew', lw=0.6)
 
